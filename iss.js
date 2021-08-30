@@ -42,7 +42,6 @@ const fetchCoordsByIP = (ip, callback) => {
 };
 
 const fetchISSFlyOverTimes = (coords, callback) => {
-  // console.log(coords.latitude, coords.longitude);
   request(`http://api.open-notify.org/iss-pass.json?lat=${coords.latitude}&lon=${coords.longitude}`, (error, response, body) => {
     if (error) {
       callback(error, null);
@@ -62,12 +61,30 @@ const fetchISSFlyOverTimes = (coords, callback) => {
 };
 
 const nextISSTimesForMyLocation = (callback) => {
+  fetchMyIP((error, ip) => {
+    if (error) {
+      return (error, null);
+    }
 
+    fetchCoordsByIP(ip, (error, geolocation) => {
+      if (error) {
+        return (error, null);
+      }
+      
+      fetchISSFlyOverTimes(geolocation, (error, flyOvers) => {
+        if (error) {
+          return (error, null);
+        }
+
+        callback(null, flyOvers);
+      }) 
+    })
+  })
 };
 
 module.exports = {
-  fetchMyIP,
-  fetchCoordsByIP,
-  fetchISSFlyOverTimes,
+  // fetchMyIP,
+  // fetchCoordsByIP,
+  // fetchISSFlyOverTimes,
   nextISSTimesForMyLocation
 };
