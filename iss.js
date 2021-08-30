@@ -1,7 +1,6 @@
 const request = require('request');
 
 const fetchMyIP = (callback) => {
-  // use request to fetch IP address from JSON API
   request('https://api64.ipify.org/?format=json', (error, response, body) => {
     if (error) {
       callback(error, null);
@@ -42,7 +41,33 @@ const fetchCoordsByIP = (ip, callback) => {
   });
 };
 
+const fetchISSFlyOverTimes = (coords, callback) => {
+  // console.log(coords.latitude, coords.longitude);
+  request(`http://api.open-notify.org/iss-pass.json?lat=${coords.latitude}&lon=${coords.longitude}`, (error, response, body) => {
+    if (error) {
+      callback(error, null);
+      return;
+    }
+
+    if (response.statusCode !== 200) {
+      const msg = `Status Code ${response.statusCode} when fetching fly over for coordinates. Response: ${body}`;
+      callback(Error(msg), null);
+      return;
+    }
+
+    const flyOver = JSON.parse(body).response;
+    
+    callback(null, flyOver);
+  });
+};
+
+const nextISSTimesForMyLocation = (callback) => {
+
+};
+
 module.exports = {
   fetchMyIP,
-  fetchCoordsByIP
+  fetchCoordsByIP,
+  fetchISSFlyOverTimes,
+  nextISSTimesForMyLocation
 };
